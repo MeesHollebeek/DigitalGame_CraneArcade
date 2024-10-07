@@ -9,15 +9,22 @@ public class DroppingHook : MonoBehaviour
 
     public float CraneHeight;
     public float Groundlevel;
+
+    public bool goingForward;
+    public bool goingBackward;
+
+    public bool goingUp;
+    public bool goingDown;
+
     void Update()
     {
         //up&down
-        if (Input.GetButton("Fire3"))
+        if (goingUp)
         {
             gameObject.transform.position = new Vector3(gameObject.transform.position.x, gameObject.transform.position.y + 00000000000.1f/ 20, gameObject.transform.position.z);
         }
 
-        if (Input.GetButton("Fire4"))
+        if (goingDown)
         {
             gameObject.transform.position = new Vector3(gameObject.transform.position.x, gameObject.transform.position.y - 000000000000.1f / 20, gameObject.transform.position.z);
         }
@@ -34,14 +41,14 @@ public class DroppingHook : MonoBehaviour
 
 
         //Over the crane
-        if (Input.GetButton("Fire5"))
+        if (goingForward)
         {
             gameObject.transform.position = Vector3.MoveTowards(transform.position, Front.position , 5 * Time.deltaTime);
            
          
         }
 
-        if (Input.GetButton("Fire6"))
+        if (goingBackward)
         {
             gameObject.transform.position = Vector3.MoveTowards(transform.position, Back.position, 5 * Time.deltaTime);
 
