@@ -4,59 +4,86 @@ using UnityEngine;
 
 public class DroppingHook : MonoBehaviour
 {
-    public Transform Front;
-    public Transform Back;
+    public Transform frontPoint;  // Position to move towards
+    public Transform backPoint;   // Position to move backward
+    public Transform groundReference; // Reference for ground level
+    public Transform maxHeightReference; // Reference for max height
 
-    public float CraneHeight;
-    public float Groundlevel;
+    public float groundOffset = 0;  // Offset to raise the ground level
+    public float maxHeightOffset = 0; // Offset to lower the max height
+
+    private float groundLevel;
+    private float maxHeight;
 
     public bool goingForward;
     public bool goingBackward;
-
     public bool goingUp;
     public bool goingDown;
 
+    void Start()
+    {
+        // Calculate ground and max height based on references and offsets
+        groundLevel = groundReference.position.y + groundOffset;
+        maxHeight = maxHeightReference.position.y + maxHeightOffset;
+        InitializeHook(); // Set initial position of the hook
+    }
+
+    void InitializeHook()
+    {
+        // Set the hook's initial position based on ground level
+        transform.position = new Vector3(transform.position.x, maxHeight, transform.position.z);
+    }
+
     void Update()
     {
-        //up&down
+        // Movement logic for the hook
+        MoveHook();
+        ClampHeight(); // Ensure the hook stays within height limits
+    }
+
+    void MoveHook()
+    {
+        // Move vertically
         if (goingUp)
         {
-            gameObject.transform.position = new Vector3(gameObject.transform.position.x, gameObject.transform.position.y + 00000000000.1f/ 20, gameObject.transform.position.z);
+            transform.position += Vector3.up * Time.deltaTime; // Move up
         }
 
         if (goingDown)
         {
-            gameObject.transform.position = new Vector3(gameObject.transform.position.x, gameObject.transform.position.y - 000000000000.1f / 20, gameObject.transform.position.z);
+            transform.position += Vector3.down * Time.deltaTime; // Move down
         }
 
-        if(gameObject.transform.position.y > CraneHeight)
-        {
-            gameObject.transform.position = new Vector3(gameObject.transform.position.x, CraneHeight, gameObject.transform.position.z);
-        }
-
-        if (gameObject.transform.position.y < Groundlevel)
-        {
-            gameObject.transform.position = new Vector3(gameObject.transform.position.x, Groundlevel, gameObject.transform.position.z);
-        }
-
-
-        //Over the crane
+        // Move horizontally towards front and back points
         if (goingForward)
         {
-            gameObject.transform.position = Vector3.MoveTowards(transform.position, Front.position , 5 * Time.deltaTime);
-           
-         
+            MoveToPoint(frontPoint.position);
         }
 
         if (goingBackward)
         {
-            gameObject.transform.position = Vector3.MoveTowards(transform.position, Back.position, 5 * Time.deltaTime);
+            MoveToPoint(backPoint.position);
+        }
+    }
 
+    void MoveToPoint(Vector3 targetPosition)
+    {
+        // Move horizontally towards the target position while maintaining current Y
+        Vector3 target = new Vector3(targetPosition.x, transform.position.y, targetPosition.z);
+        transform.position = Vector3.MoveTowards(transform.position, target, 5 * Time.deltaTime); // Speed can be adjusted
+    }
 
-
+    void ClampHeight()
+    {
+        // Clamp the hook's height to stay within limits
+        if (transform.position.y > maxHeight)
+        {
+            transform.position = new Vector3(transform.position.x, maxHeight, transform.position.z);
         }
 
-       
+        if (transform.position.y < groundLevel)
+        {
+            transform.position = new Vector3(transform.position.x, groundLevel, transform.position.z);
+        }
     }
 }
-
